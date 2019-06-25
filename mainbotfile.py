@@ -4,12 +4,23 @@ telebot.apihelper.proxy = {'https': 'socks5://geek:socks@t.geekclass.ru:7777'}
 bot = telebot.TeleBot(token)
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    if message.text.lower() == "привет":
-        bot.send_message(message.chat.id, "Ну привет")
-    elif message.text == "/help":
-        bot.send_message(message.chat.id, "Ботик для Валентина, напиши привет.")
-    else:
-        bot.send_message(message.chat.id, "Бро, напиши /help.")
+    mes = message.text.lower()
+    if "#music" in mes:
+        mes = mes.replace("#music", "")
+        c = mes.count(" - ")
+        f = True
+        if c:
+            if c > 1:
+                bot.send_message(message.chat.id, "Неверный формат ввода")
+                f = False
+            else:
+                musician, compose = mes.split(" - ")
+                musician, compose = musician.strip(), compose.strip()
+            if f:
+                bot.send_message(message.chat.id, "Исполнитель - "+musician)
+                bot.send_message(message.chat.id, "Композиция - "+compose)
+        else:
+            bot.send_message(message.chat.id, "#music Введите исполнитель - композиция")
 
 
 bot.polling(none_stop=True, timeout=60)
