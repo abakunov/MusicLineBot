@@ -1,15 +1,22 @@
-def ReadMatData(array):
-    f = array
-    print(f)
-    arr = f.split(' ')
-    return CheckMat(arr, array)
+def CheckMat(text):
+    a = []
+    f = open('mat.txt')
+    for line in f.readlines():
+        line = line.split()
+        for i in range(len(line)):
+            a.append(line[i])
+            break
 
+    b = ''
+    v = text
+    b = b + ' ' + v
 
-def CheckMat(arr, text):
+    b = b.split()
     flag = False
-    for i in arr:
-        if i in text:
+
+    for i in range(len(b)):
+        if b[i].upper() in a:
             flag = True
-    print(flag)
+            break
     return flag
 

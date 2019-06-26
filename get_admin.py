@@ -16,7 +16,7 @@ def add_admin(id, username):
         with open('admins.txt', 'r') as f:
             user_id = int(f.readline().strip().split()[-1])
         with open('admins.txt', 'a') as f:
-            f.write(str(user_id) + ' ' + str(id) + ' ' + username)
+            f.write(str(user_id) + ' ' + str(id) + ' ' + username + '\n')
             user_id += 1
         file = []
         with open('admins.txt', 'r') as f:

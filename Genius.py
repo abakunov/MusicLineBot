@@ -12,6 +12,7 @@ def find_out(artist, song_name):
         a['song'] = song.title
         a['artist'] = song.artist
         a['text'] = song.lyrics
+        a['url'] = song.url
     except AttributeError:
         a = {}
 

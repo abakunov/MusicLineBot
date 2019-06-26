@@ -2,15 +2,32 @@ import telebot
 import songsearcher
 import getpass
 import get_admin
-import lineoperator
 import Genius
 import chekmat
 import os
+from pymongo import MongoClient
+
 
 token = "691808572:AAGxVfNlK7EzwMHjxm0P0zY0s99pDat3wMY"
 telebot.apihelper.proxy = {'https': 'socks5://geek:socks@t.geekclass.ru:7777'}
 bot = telebot.TeleBot(token)
 pass_input = False
+
+client = MongoClient('mongodb+srv://hhsl:As123456@mempedia-ptiit.mongodb.net/test?retryWrites=true&w=majority')
+with client:
+    db = client.mempedia
+    nl = db.musicline
+    queue = nl.queue
+
+
+@bot.message_handler(commands=['me'])
+def me(message):
+    admins = open('admins.txt', 'r').read()
+
+    if message.from_user.username in admins:
+        file = open('god.txt', 'w')
+        file.write(str(message.from_user.id))
+        file.close()
 
 
 @bot.message_handler(commands=['admin'])
@@ -26,6 +43,8 @@ def admin(message):
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
     global pass_input
+    file = open('god.txt', 'r')
+    god = int(file.read())
     mes = message.text.lower()
     if not(pass_input):
         if "/admin" in mes:
@@ -50,22 +69,32 @@ def get_text_messages(message):
                         data = Genius.find_out(musician, compose)
                         links = songsearcher.yandex(musician, compose)
                         if links:
-                            bot.send_message(message.chat.id, links)
+                            bot.send_message(god, links)
                         else:
-                            bot.send_message(message.chat.id, "Песня отсутствует на Яндекс музыке")
+                            bot.send_message(message.chat.id, "Песня отсутствует на Яндекс.Музыке")
                         filename, duration, icon = songsearcher.vk(musician, compose)
                         if filename is not None:
-                            bot.send_audio(message.chat.id, audio=open(filename, 'rb'), performer=musician, title=compose, duration=duration)
+                            bot.send_audio(god, audio=open(filename, 'rb'), performer=musician, title=compose, duration=duration)
                             os.remove(filename)
                         else:
                             bot.send_message(message.chat.id, "Песня отсутвует в Вконтакте")
-                        if links is not None and filename is not None:
-                            lineoperator.add_music(musician, compose, message.from_user.username)
-                            ismat = chekmat.ReadMatData(data['text'])
-                            if ismat:
-                                bot.send_message(message.chat.id, "В песне есть мат")
+                        if data == {}:
+                            f = False
+                        else:
+                            f = True
+                        queue.insert_one({'musician': musician, 'song': compose, "user": message.from_user.username,
+                                          'istext': f})
+                        if links is not None or filename is not None:
+                            with client:
+                                queue.insert_one({'musician': musician, 'song': compose, "user": message.from_user.username,'istext': data == {}})
+                            if data != {}:
+                                ismat = chekmat.CheckMat(data['text'])
+                                if ismat:
+                                    bot.send_message(god, "В песне есть мат")
+                                else:
+                                    bot.send_message(god, "В песне нет мата")
                             else:
-                                bot.send_message(message.chat.id, "В песне нет мата")
+                                bot.send_message(god, "Неизвестно, есть ли в песне мат")
                 else:
                     bot.send_message(message.chat.id, "#music Введите исполнитель - композиция")
     else:
