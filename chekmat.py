@@ -1,20 +1,15 @@
-f = open('lyrics.txt', 'r')
-lyrics = f.read()
-f.close()
+def ReadMatData(array):
+    f = array
+    print(f)
+    arr = f.split(' ')
+    return CheckMat(arr, array)
 
 
-def ReadMatData():
-    f = open('matdata.txt', 'r')
-    arr = []
-    for line in f:
-        arr.append(line[:-1])
-    return CheckMat(arr)
-
-
-def CheckMat(arr):
+def CheckMat(arr, text):
     flag = False
     for i in arr:
-        if i in lyrics:
+        if i in text:
             flag = True
+    print(flag)
     return flag
 

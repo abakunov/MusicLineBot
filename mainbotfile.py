@@ -59,7 +59,7 @@ def get_text_messages(message):
                             bot.send_message(message.chat.id, "Песня отсутвует в Вконтакте")
                         if links is not None and filename is not None:
                             lineoperator.add_music(musician, compose, message.from_user.username)
-                            ismat = chekmat.ReadMatData()
+                            ismat = chekmat.ReadMatData(data['text'])
                             if ismat:
                                 bot.send_message(message.chat.id, "В песне есть мат")
                             else:
