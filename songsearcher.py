@@ -3,14 +3,17 @@ from bs4 import BeautifulSoup
 
 
 def yandex(musician, compose):
-    request = requests.get("https://music.yandex.ru/search?text=" + compose).text
+    request = requests.get("https://music.yandex.ru/search?text=" + '%20'.join(compose.split(' '))).text
     soup = BeautifulSoup(request).find()
     links = []
     flag = False
     for f in soup.findAll('div', title=True):
         for e in f.findChildren():
             if e.text.lower() == compose.lower():
-                link = ("https://music.yandex.ru" + str(e['href']))
+                try:
+                    link = ("https://music.yandex.ru" + str(e['href']))
+                except:
+                    continue
                 newrequest = requests.get(link).text
                 ultrasoup = BeautifulSoup(newrequest).find()
                 for k in ultrasoup('span'):
@@ -45,7 +48,7 @@ def vk(musician, compose):
                 duration = k.find(class_="duration").text
                 icon = i.findChildren(class_="cover")
                 icon = icon[0]['style'][23:-3]
-                if str(m.text).lower() == musician.lower():
+                if musician.lower() in str(m.text).lower() :
                     l = k.find('a', href=True)
                     link = ("https://vrit.me" + l['href'])
                     req = requests.get(link)

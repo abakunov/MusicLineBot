@@ -5,6 +5,7 @@ import get_admin
 import lineoperator
 import Genius
 import chekmat
+import os
 
 token = "691808572:AAGxVfNlK7EzwMHjxm0P0zY0s99pDat3wMY"
 telebot.apihelper.proxy = {'https': 'socks5://geek:socks@t.geekclass.ru:7777'}
@@ -47,14 +48,15 @@ def get_text_messages(message):
                         musician, compose = musician.strip(), compose.strip()
                     if f:
                         data = Genius.find_out(musician, compose)
-                        links = songsearcher.yandex(data['artist'], data['song'])
+                        links = songsearcher.yandex(musician, compose)
                         if links:
                             bot.send_message(message.chat.id, links)
                         else:
                             bot.send_message(message.chat.id, "Песня отсутствует на Яндекс музыке")
-                        filename, duration, icon = songsearcher.vk(data['artist'], data['song'])
+                        filename, duration, icon = songsearcher.vk(musician, compose)
                         if filename is not None:
-                            bot.send_audio(message.chat.id, audio=open(filename, 'rb'), performer=data['artist'], title=data['song'], duration=duration)
+                            bot.send_audio(message.chat.id, audio=open(filename, 'rb'), performer=musician, title=compose, duration=duration)
+                            os.remove(filename)
                         else:
                             bot.send_message(message.chat.id, "Песня отсутвует в Вконтакте")
                         if links is not None and filename is not None:
