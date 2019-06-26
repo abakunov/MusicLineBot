@@ -40,6 +40,9 @@ def vk(musician, compose):
         if flag == False:
             for k in i.findChildren(class_="info"):
                 m = k.find(class_="artist")
+                duration = k.find(class_="duration").text
+                icon = i.findChildren(class_="cover")
+                icon = icon[0]['style'][23:-3]
                 if str(m.text).lower() == musician.lower():
                     l = k.find('a', href=True)
                     link = ("https://vrit.me"+l['href'])
@@ -47,9 +50,8 @@ def vk(musician, compose):
                     filename = str('tracks/'+compose.replace(' ', '')+'.mp3')
                     with open(filename, 'wb') as f:
                         f.write(req.content)
-                    return filename
+                    return filename, duration, icon
                     flag = True
                     break
 
 
-vk('matthew koma', 'kisses back')
