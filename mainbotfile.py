@@ -5,6 +5,7 @@ import get_admin
 import Genius
 import chekmat
 import os
+import string
 from pymongo import MongoClient
 
 
@@ -18,6 +19,11 @@ nl = client.musicline
 queue = nl.queue
 
 
+@bot.message_handler(commands=['clear_line'])
+def clear(message):
+    queue.delete_many({})
+
+
 @bot.message_handler(commands=['line'])
 def line(message):
     line = list(queue.find())
@@ -25,11 +31,7 @@ def line(message):
         line = line[-10:]
     for i in range(len(line)):
         p = line[i]
-
-        if p['user'] != None:
-            bot.send_message(message.from_user.id, (f'<a href="tg://user?id={p["user"]}">{p["firstname"]}</a>' + ': ' + str(i + 1) + '. ' + p['musician'] + ' -' + p['song']), parse_mode="HTML")
-        else:
-            bot.send_message(message.from_user.id, ('Someone ' + str(i + 1) + '. ' + p['musician'] +' -' + p['song']))
+        bot.send_message(message.from_user.id, (f'<a href="tg://user?id={p["user"]}">{p["firstname"]}</a>' + ': ' + str(i + 1) + '. ' + p['musician'] + ' - ' + p['song']), parse_mode="HTML")
 
 
 @bot.message_handler(commands=['me'])
@@ -79,27 +81,18 @@ def get_text_messages(message):
                         musician, compose = musician.strip(), compose.strip()
                     if f:
                         data = Genius.find_out(musician, compose)
-                        if data == {}:
-                            author = musician
-                            song = compose
-                        else:
-                            author = data['artist']
-                            song = data['song']
-                        links = songsearcher.yandex(author, song)
-                        if links:
-                            bot.send_message(god, links)
-                        else:
-                            bot.send_message(message.chat.id, "Песня отсутствует на Яндекс.Музыке😔")
-                        filename, duration, icon = songsearcher.vk(author, song)
+                        if data:
+                            bot.send_message(god, data['utube'])
+                        filename, duration, icon = songsearcher.vk(musician, compose)
                         if filename is not None:
-                            bot.send_audio(god, audio=open(filename, 'rb'), performer=author, title=song, duration=duration)
+                            bot.send_audio(god, audio=open(filename, 'rb'), performer=musician, title=compose, duration=duration)
                             os.remove(filename)
                         else:
                             bot.send_message(message.chat.id, "Песня отсутвует в Вконтакте🤔")
-                        if links is not None or filename is not None:
-                            queue.insert_one({'musician': author, 'song': song, "user": message.from_user.id, 'firstname': message.from_user.first_name + ' ' + message.from_user.last_name,
+                        if filename is not None:
+                            queue.insert_one({'musician': musician, 'song': compose, "user": message.from_user.id, 'firstname': message.from_user.first_name + ' ' + message.from_user.last_name,
                                               'url': data['url'] if 'url' in data else None})
-                            if data != {}:
+                            if data:
                                 bot.send_message(god, data['url'])
                                 ismat = chekmat.CheckMat(data['text'])
                                 if ismat:

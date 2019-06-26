@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 
 def yandex(musician, compose):
-    request = requests.get("https://music.yandex.ru/search?text=" + '%20'.join(compose.split(' '))).text
+    request = requests.get("https://music.yandex.ru/search?text=" + '%20'.join(compose.lower().split(' '))).text
     soup = BeautifulSoup(request).find()
     links = []
     flag = False
@@ -33,7 +33,7 @@ def yandex(musician, compose):
 
 
 def vk(musician, compose):
-    page = requests.get(f'https://vrit.me/?q={"%20".join(compose.split())}')
+    page = requests.get(f'https://vrit.me/?q={"%20".join(compose.lower().split())}')
     soup = BeautifulSoup(page.text, 'html.parser')
     list_mus = soup.find_all('div')[0]
     try:
@@ -48,7 +48,7 @@ def vk(musician, compose):
                 duration = k.find(class_="duration").text
                 icon = i.findChildren(class_="cover")
                 icon = icon[0]['style'][23:-3]
-                if musician.lower() in str(m.text).lower() :
+                if musician.strip().lower() in str(m.text).lower() :
                     l = k.find('a', href=True)
                     link = ("https://vrit.me" + l['href'])
                     req = requests.get(link)

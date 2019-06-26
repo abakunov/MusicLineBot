@@ -13,8 +13,12 @@ def find_out(artist, song_name):
         a['artist'] = song.artist
         a['text'] = song.lyrics
         a['url'] = song.url
+        providers = song.media
+        for provider in providers:
+            if provider['provider'] == 'youtube':
+                a['utube'] = provider['url']
     except AttributeError:
-        a = {}
+        a = 0
 
     return a
 
