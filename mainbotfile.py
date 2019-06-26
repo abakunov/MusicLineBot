@@ -24,10 +24,10 @@ def get_text_messages(message):
                 links = songsearcher.yandex(musician, compose)
                 for link in links:
                     bot.send_message(message.chat.id, link)
-                bot.send_audio(message.chat.id, audio=open(songsearcher.vk(musician, compose), 'rb'))
+                bot.send_audio(message.chat.id, audio=open(songsearcher.vk(musician, compose), 'rb'), performer=musician, title=compose)
 
         else:
             bot.send_message(message.chat.id, "#music Введите исполнитель - композиция")
 
 
-bot.polling(none_stop=True, timeout=60)
+bot.polling(none_stop=True)

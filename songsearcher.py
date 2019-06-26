@@ -31,7 +31,7 @@ def yandex(musician, compose):
 
 
 def vk(musician, compose):
-    page = requests.get(f'https://vrit.me/?q={"%".join(compose.split())}')
+    page = requests.get(f'https://vrit.me/?q={"%20".join(compose.split())}')
     soup = BeautifulSoup(page.text, 'html.parser')
     list_mus = soup.find_all('div')[0]
     m = list_mus.find_all(class_='audios')[0]
@@ -44,7 +44,7 @@ def vk(musician, compose):
                     l = k.find('a', href=True)
                     link = ("https://vrit.me"+l['href'])
                     req = requests.get(link)
-                    filename = str(compose.replace(' ', '')+'.mp3')
+                    filename = str('tracks/'+compose.replace(' ', '')+'.mp3')
                     with open(filename, 'wb') as f:
                         f.write(req.content)
                     return filename
@@ -52,4 +52,4 @@ def vk(musician, compose):
                     break
 
 
-vk('lil nas x', 'old town road')
+vk('matthew koma', 'kisses back')
