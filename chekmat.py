@@ -2,12 +2,14 @@ f = open('lyrics.txt', 'r')
 lyrics = f.read()
 f.close()
 
+
 def ReadMatData():
     f = open('matdata.txt', 'r')
     arr = []
     for line in f:
         arr.append(line[:-1])
-    return arr
+    return CheckMat(arr)
+
 
 def CheckMat(arr):
     flag = False
@@ -16,4 +18,3 @@ def CheckMat(arr):
             flag = True
     return flag
 
-print(CheckMat(ReadMatData()))
