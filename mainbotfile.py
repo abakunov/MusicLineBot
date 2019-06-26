@@ -55,7 +55,7 @@ def get_text_messages(message):
                     bot.send_message(message.chat.id, "#music Введите исполнитель - композиция")
     else:
         if mes == getpass.return_pass():
-            get_admin.add_admin(message.chat.id)
+            get_admin.add_admin(message.chat.id, message.chat.username)
         else:
             bot.send_message(message.chat.id, "Неверный пароль")
         pass_input = False
